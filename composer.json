@@ -1,0 +1,22 @@
+{
+  "name": "garyburge/yii-MultidomainClientScript",
+  "description": "A fork of the excellend 'yii-MultidomainClientScript' extension by Borales (https://github.com/Borales/yii-MultidomainClientScript).",
+  "keywords": ["yii", "extension", "assets", "clientScript", "multidomain"],
+  "homepage": "https://github.com/garyburge/yii-MultidomainClientScript",
+  "type": "yii-extension",
+  "license": "BSD-3-Clause",
+  "version": "dev-master",
+  "authors": [
+    {
+      "name": "Alexandr Bordun",
+    },
+    {
+      "name": "Gary Burge",
+      "email": "garyburge@garyburge.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.1.0",
+    "yiisoft/yii": "1.1.*"
+  }
+}
