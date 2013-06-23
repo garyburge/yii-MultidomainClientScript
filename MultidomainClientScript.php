@@ -1,10 +1,24 @@
 <?php
+
 /**
- * @author Borales <bordun.alexandr@gmail.com>
+ * @author Borales <bordun.alexandr@gmail.com>, modified by Gary Burge
  *
  * @property string $assetsBaseUrl Use it (Yii::app()->clientScript->assetsBaseUrl) instead of Yii::app()->request->baseUrl
+ * 
  */
-class MultidomainClientScript extends CClientScript {
+class MultidomainClientScript extends CClientScript
+{
+
+    /**
+     * GLB: Add this because it is referenced in code, but not defined here
+     */
+    public $enableStaticAssets = true;
+
+    /**
+     * GLB: add array of other subdomains to remove before prepending $assetsSubdomain
+     * e.g. 'admin.mydomain.com' => 'mydomain.com' => 'assetsSubdomain.mydomain.com'
+     */
+    public $subdomainsToRemove = false;
 
     /**
      * @var bool Whether the multidomain assets are enabled
@@ -25,14 +39,39 @@ class MultidomainClientScript extends CClientScript {
      * @param string $subDomainIndex
      * @return string
      */
-    public function getAssetsBaseUrl($subDomainIndex="") {
+    public function getAssetsBaseUrl($subDomainIndex = "")
+    {
+        // get base url
         $baseUrl = Yii::app()->request->baseUrl;
-        if($this->enableMultidomainAssets===false)
-            return $baseUrl;
 
-        $schema = Yii::app()->request->isSecureConnection?"https://":"http://";
-        $subDomainIndex = $this->indexedAssetsSubdomain?$subDomainIndex:"";
-        $baseUrl = $schema.$this->assetsSubdomain.$subDomainIndex.'.'.Yii::app()->request->serverName.$baseUrl;
+        // if no multi-domain assets requested, return base url
+        if ($this->enableMultidomainAssets === false) {
+            return $baseUrl;
+        }
+
+        // get host portion of current url
+        $serverName = Yii::app()->request->serverName;
+
+        // remove other subdomains?
+        if ($this->subdomainsToRemove && is_array($this->subdomainsToRemove) && count($this->subdomainsToRemove)) {
+            // get hostname without subdomain
+            $serverName = str_replace($this->subdomainsToRemove, '', $serverName);
+            // strip leading dot
+            if (0 === strpos($serverName, '.')) {
+                $serverName = substr($serverName, 1);
+            }
+        }
+
+        // get protocol
+        $schema = Yii::app()->request->isSecureConnection ? "https://" : "http://";
+
+        // index requested?
+        $subDomainIndex = $this->indexedAssetsSubdomain ? $subDomainIndex : "";
+
+        // format asset domain url
+        $baseUrl = $schema . $this->assetsSubdomain . $subDomainIndex . '.' . $serverName . $baseUrl;
+
+        // and return it
         return $baseUrl;
     }
 
@@ -45,29 +84,31 @@ class MultidomainClientScript extends CClientScript {
      */
     public function render(&$output)
     {
-        if($this->enableStaticAssets && $this->hasScripts) {
+        if ($this->enableStaticAssets && $this->hasScripts) {
             $this->renderCoreScripts();
-            $this->coreScripts=null;
+            $this->coreScripts = null;
             $this->processAssetsUrl();
         }
 
         parent::render($output);
     }
 
-    protected function processAssetsUrl() {
-        foreach($this->cssFiles as $file=>$media) {
-            if(strpos($file, '/') === 0) {
+    protected function processAssetsUrl()
+    {
+        foreach ($this->cssFiles as $file=> $media) {
+            if (strpos($file, '/') === 0) {
                 unset($this->cssFiles[$file]);
-                $this->cssFiles[$this->assetsBaseUrl.$file] = $media;
+                $this->cssFiles[$this->assetsBaseUrl . $file] = $media;
             }
         }
 
-        foreach($this->scriptFiles as $pos=>$scripts) {
-            foreach($scripts as $scriptName=>$script) {
-                if(strpos($script, '/') === 0) {
-                    $this->scriptFiles[$pos][$scriptName] = $this->getAssetsBaseUrl($pos).$script;
+        foreach ($this->scriptFiles as $pos=> $scripts) {
+            foreach ($scripts as $scriptName=> $script) {
+                if (strpos($script, '/') === 0) {
+                    $this->scriptFiles[$pos][$scriptName] = $this->getAssetsBaseUrl($pos) . $script;
                 }
             }
         }
     }
+
 }

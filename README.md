@@ -1,5 +1,11 @@
 Multidomain ClientScript (assets)
 =================================
+
+A modified version of the excellent Yii extension by Borales. The modifications include:
+
+- Add declaration of member variable `'$enableStaticAssets'`, which was referenced but never defined
+- Add code in function `getAssetsBaseUrl` to strip other subdomains from request url.
+
 Extending default Yii [CClientScript](https://github.com/yiisoft/yii/blob/master/framework/web/CClientScript.php) class to use multiple subdomains for assets (scripts and stylesheets).
 
 Preinstall
@@ -18,6 +24,7 @@ After this, you can enhance `CClientScript` class by making some changes in your
         'class' => 'application.components.MultidomainClientScript',
         'enableMultidomainAssets' => true,
         'assetsSubdomain' => 'assets',
+        'subdomainsToRemove' => false,
         'indexedAssetsSubdomain' => false,
     ),
     ...
@@ -28,6 +35,7 @@ Params
 ------
 - `enableMultidomainAssets` - whether to use subdomains for ClientScript assets. Default is `true`
 - `assetsSubdomain` - subdomain name (e.g. `http://assets.example.com`). Default is `'assets'`
+- `subdomainsToRemove` - array of subdomain names to strip from request url before prepending `'assetsSubdomain'` (e.g. array('admin','api')). Default is false, or no subdomains.
 - `indexedAssetsSubdomain` - whether to use indexed subdomains for registered script files basing on their `'position'` param. Default is `false`
 
 Examples
