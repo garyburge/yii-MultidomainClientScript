@@ -4,7 +4,7 @@
  * @author Borales <bordun.alexandr@gmail.com>, modified by Gary Burge
  *
  * @property string $assetsBaseUrl Use it (Yii::app()->clientScript->assetsBaseUrl) instead of Yii::app()->request->baseUrl
- * 
+ *
  */
 class MultidomainClientScript extends CClientScript
 {
@@ -43,6 +43,7 @@ class MultidomainClientScript extends CClientScript
     {
         // get base url
         $baseUrl = Yii::app()->request->baseUrl;
+
 
         // if no multi-domain assets requested, return base url
         if ($this->enableMultidomainAssets === false) {
@@ -104,8 +105,10 @@ class MultidomainClientScript extends CClientScript
 
         foreach ($this->scriptFiles as $pos=> $scripts) {
             foreach ($scripts as $scriptName=> $script) {
-                if (strpos($script, '/') === 0) {
-                    $this->scriptFiles[$pos][$scriptName] = $this->getAssetsBaseUrl($pos) . $script;
+                if (strpos($script, '//') !== 0) {
+                    if (strpos($script, '/') === 0) {
+                        $this->scriptFiles[$pos][$scriptName] = $this->getAssetsBaseUrl($pos) . $script;
+                    }
                 }
             }
         }
