@@ -44,7 +44,6 @@ class MultidomainClientScript extends CClientScript
         // get base url
         $baseUrl = Yii::app()->request->baseUrl;
 
-
         // if no multi-domain assets requested, return base url
         if ($this->enableMultidomainAssets === false) {
             return $baseUrl;
